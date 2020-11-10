@@ -1,0 +1,41 @@
+<project name="Driver" default="war" basedir="..">
+    <property file="hikari.khudolii.drivers/build.properties"/>
+    <path id="classpath">
+        <fileset dir="${root.dir}/${lib.dir}" includes="servlet-api.jar"/>
+        <fileset dir="${root.dir}/${lib.dir}" includes="HikariCP-3.4.5.jar"/>
+        <fileset dir="${root.dir}/${lib.dir}" includes="jstl1_2.jar"/>
+
+    </path>
+    <target name="clean">
+        <echo>Cleaning the ${build.dir}</echo>
+        <delete dir="${build.dir}"/>
+    </target>
+    <target name="init" depends="clean">
+        <echo>Create dir to build</echo>
+        <mkdir dir="${root.dir}/${build.dir}/WEB-INF/classes"/>
+        <mkdir dir="${root.dir}/${build.dir}/WEB-INF/lib"/>
+    </target>
+    <target name="compile" depends="init">
+        <echo>Compile the source files</echo>
+        <javac srcdir="${root.dir}/${src.dir}" destdir="${root.dir}/${build.dir}/WEB-INF/classes">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+    <target name="copy" depends="compile">
+        <copy todir="${root.dir}/${build.dir}/WEB-INF">
+            <fileset dir="${root.dir}/${conf.dir}"/>
+        </copy>
+        <copy todir="${root.dir}/${build.dir}">
+            <fileset dir="${root.dir}/${web.content}"/>
+        </copy>
+        <copy todir="${root.dir}/${build.dir}/WEB-INF/lib">
+            <fileset dir="${root.dir}/${lib.dir}"/>
+        </copy>
+    </target>
+    <target name="war" depends="copy">
+        <echo>Building the war file</echo>
+        <war destfile="${deploy.web.dir}/${project.name}.war" webxml="${root.dir}/${build.dir}/WEB-INF/web.xml">
+            <fileset dir="${root.dir}/${build.dir}"/>
+        </war>
+    </target>
+</project>
